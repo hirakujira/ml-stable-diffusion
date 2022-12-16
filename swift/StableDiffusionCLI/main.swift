@@ -161,7 +161,7 @@ struct StableDiffusionSample: ParsableCommand {
                 continue
             }
 
-            let name = imageName(i, step: step)
+            let name = imageName(i, step: step, stepCount: stepCount)
             let fileURL = url.appending(path:name)
 
             guard let dest = CGImageDestinationCreateWithURL(fileURL as CFURL, UTType.png.identifier as CFString, 1, nil) else {
@@ -179,7 +179,7 @@ struct StableDiffusionSample: ParsableCommand {
         return saved
     }
 
-    func imageName(_ sample: Int, step: Int? = nil) -> String {
+    func imageName(_ sample: Int, step: Int? = nil, stepCount: Int) -> String {
         let fileCharLimit = 75
         var name = prompt.prefix(fileCharLimit).replacingOccurrences(of: " ", with: "_")
         if imageCount != 1 {
@@ -191,7 +191,7 @@ struct StableDiffusionSample: ParsableCommand {
         if let step = step {
             name += ".\(step)"
         } else {
-            name += ".final"
+            name += ".\(stepCount)"
         }
         name += ".png"
         return name
