@@ -68,6 +68,9 @@ struct StableDiffusionSample: ParsableCommand {
     @Flag(help: "Reduce memory usage")
     var reduceMemory: Bool = false
 
+    @Flag(help: "Increse random seed by 1 for each image")
+    var incrementSeed: Bool = false
+
     mutating func run() throws {
         guard FileManager.default.fileExists(atPath: resourcePath) else {
             throw RunError.resources("Resource path does not exist \(resourcePath)")
@@ -88,25 +91,39 @@ struct StableDiffusionSample: ParsableCommand {
         log("Sampling ...\n")
         let sampleTimer = SampleTimer()
         sampleTimer.start()
+        
+        let loops = incrementSeed ? imageCount : 1
+        let imageCountPerBatch = incrementSeed ? 1 : imageCount
 
-        let images = try pipeline.generateImages(
-            prompt: prompt,
-            negativePrompt: negativePrompt,
-            imageCount: imageCount,
-            stepCount: stepCount,
-            seed: seed,
-            guidanceScale: guidanceScale,
-            scheduler: scheduler.stableDiffusionScheduler
-        ) { progress in
-            sampleTimer.stop()
-            handleProgress(progress,sampleTimer)
-            if progress.stepCount != progress.step {
-                sampleTimer.start()
+        for i in 0 ..< loops {
+            if (incrementSeed) {
+                log("Generating image \(i+1) of \(imageCount) with seed \(seed)\n")
+                log("\n")
             }
-            return true
-        }
 
-        _ = try saveImages(images, logNames: true)
+            let images = try pipeline.generateImages(
+                prompt: prompt,
+                negativePrompt: negativePrompt,
+                imageCount: imageCountPerBatch,
+                stepCount: stepCount,
+                seed: seed,
+                guidanceScale: guidanceScale,
+                scheduler: scheduler.stableDiffusionScheduler
+            ) { progress in
+                sampleTimer.stop()
+                handleProgress(progress,sampleTimer)
+                if progress.stepCount != progress.step {
+                    sampleTimer.start()
+                }
+                return true
+            }
+
+            _ = try saveImages(images, logNames: true)
+
+            if (incrementSeed) {
+                seed += 1
+            }
+        }
     }
 
     func handleProgress(
