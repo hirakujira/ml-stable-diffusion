@@ -54,7 +54,7 @@ def record_args(save_dir, prompt, negative_prompt, model, step, scheduler):
 
 def run_pipeline(save_dir, prompt, negative_prompt, model, image_count, step, scheduler):
     result = subprocess.run([
-    "time", "swift", "run", "StableDiffusionSample", 
+    "swift", "run", "StableDiffusionSample", 
     prompt, 
     negative_prompt,
     "--output-path", save_dir, 

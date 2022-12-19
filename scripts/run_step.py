@@ -58,7 +58,10 @@ def makedir(dir_name, seed):
     return dir
 
 def run_pipeline(save_dir, prompt, negative_prompt, model, seed, step, scheduler):
-    result = subprocess.run(["time", "swift", "run", "StableDiffusionSample", prompt, negative_prompt, 
+    result = subprocess.run([
+    "swift", "run", "StableDiffusionSample", 
+    prompt, 
+    negative_prompt, 
     "--output-path", save_dir, 
     "--compute-units", "cpuAndGPU",
     "--disable-safety",
