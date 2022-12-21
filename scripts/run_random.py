@@ -56,7 +56,7 @@ def run_pipeline(save_dir, prompt, negative_prompt, model, image_count, step, sc
     result = subprocess.run([
     "swift", "run", "StableDiffusionSample", 
     prompt, 
-    negative_prompt,
+    "--negative-prompt", negative_prompt,
     "--output-path", save_dir, 
     "--compute-units", "cpuAndGPU",
     "--disable-safety",
