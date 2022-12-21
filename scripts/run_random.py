@@ -49,7 +49,7 @@ def record_args(save_dir, prompt, negative_prompt, model, step, scheduler):
         "scheduler": scheduler
     }
     f = open(save_dir + "/args.json", "w")
-    f.write(json.dumps(data))
+    f.write(json.dumps(data, sort_keys=True, indent=4))
     
 
 def run_pipeline(save_dir, prompt, negative_prompt, model, image_count, step, scheduler):
